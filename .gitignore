@@ -9,3 +9,5 @@ models/
 .idea/
 
 .DS_Store
+
+test/
