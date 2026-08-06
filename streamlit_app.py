@@ -1,5 +1,4 @@
 import streamlit as st
-import pandas as pd
 import requests
 
 API_URL = "http://127.0.0.1:8000"
@@ -12,203 +11,99 @@ st.set_page_config(
 
 st.title("🌍 Air Quality Analysis & Prediction System")
 
-page = st.sidebar.radio(
-    "Navigation",
-    [
-        "🏠 Home",
-        "📊 Data Analysis",
-        "📈 Visualizations",
-        "🤖 AQI Prediction",
-        "🚦 AQI Bucket Prediction",
-        "ℹ️ About"
-    ]
-)
+st.markdown("Predict **AQI** and **AQI Bucket** using Machine Learning.")
 
-if page == "🏠 Home":
+st.divider()
 
-    st.header("Project Overview")
+st.subheader("Enter Air Quality Details")
 
-    st.write("""
-    This project predicts Air Quality Index (AQI)
-    using Machine Learning models trained on
-    historical air quality data.
-    """)
+col1, col2 = st.columns(2)
 
-    st.subheader("Technology Stack")
+with col1:
+    state = st.text_input("State", "Telangana")
+    city = st.text_input("City", "Hyderabad")
+    pollutant = st.selectbox(
+        "Pollutant",
+        ["CO", "NH3", "NO2", "OZONE", "PM10", "PM2.5", "SO2"]
+    )
 
-    st.write("""
-    - Python
-    - Pandas
-    - Scikit-learn
-    - FastAPI
-    - Streamlit
-    """)
-    
-elif page == "📊 Data Analysis":
+    pollutant_min = st.number_input(
+        "Pollutant Min",
+        value=45.0
+    )
 
-    df = pd.read_csv("data/air_quality_clean.csv")
+    pollutant_max = st.number_input(
+        "Pollutant Max",
+        value=90.0
+    )
 
-    st.header("Dataset Preview")
+with col2:
+    pollutant_avg = st.number_input(
+        "Pollutant Average",
+        value=65.0
+    )
 
-    st.dataframe(df.head())
+    temperature = st.number_input(
+        "Temperature (°C)",
+        value=30.0
+    )
 
-    st.subheader("Shape")
+    humidity = st.number_input(
+        "Humidity (%)",
+        value=60.0
+    )
 
-    st.write(df.shape)
+    wind_speed = st.number_input(
+        "Wind Speed (km/h)",
+        value=12.0
+    )
 
-    st.subheader("Summary Statistics")
+payload = {
+    "state": state,
+    "city": city,
+    "pollutant_id": pollutant,
+    "pollutant_min": pollutant_min,
+    "pollutant_max": pollutant_max,
+    "pollutant_avg": pollutant_avg,
+    "Temperature_C": temperature,
+    "Humidity_": humidity,
+    "Wind_Speed_kmh": wind_speed,
+}
 
-    st.dataframe(df.describe())
-    
-    
+col1, col2 = st.columns(2)
 
-elif page == "📈 Visualizations":
-
-    st.header("Visualizations")
-
-    st.image("images/aqi_distribution.png")
-
-    st.image("images/state_aqi.png")
-
-    st.image("images/top_polluted_states.png")
-
-    st.image("images/top_polluted_cities.png")
-
-    st.image("images/correlation_heatmap.png")
-    
-
-elif page == "🤖 AQI Prediction":
-
-    st.header("Predict AQI")
-
-    state = st.number_input("State Encoding", 0)
-
-    city = st.number_input("City Encoding", 0)
-
-    pollutant = st.number_input("Pollutant Encoding", 0)
-
-    pollutant_min = st.number_input("Pollutant Min")
-
-    pollutant_max = st.number_input("Pollutant Max")
-
-    pollutant_avg = st.number_input("Pollutant Average")
-
-    temperature = st.number_input("Temperature")
-
-    humidity = st.number_input("Humidity")
-
-    wind = st.number_input("Wind Speed")
+with col1:
 
     if st.button("Predict AQI"):
 
-        payload = {
-
-            "state": state,
-
-            "city": city,
-
-            "pollutant_id": pollutant,
-
-            "pollutant_min": pollutant_min,
-
-            "pollutant_max": pollutant_max,
-
-            "pollutant_avg": pollutant_avg,
-
-            "Temperature_C": temperature,
-
-            "Humidity_": humidity,
-
-            "Wind_Speed_kmh": wind
-        }
-
         response = requests.post(
-            API_URL + "/predict-aqi",
+            f"{API_URL}/predict-aqi",
             json=payload
         )
 
-        prediction = response.json()
+        if response.status_code == 200:
+            result = response.json()
 
-        st.success(
-            f"Predicted AQI : {prediction['Predicted_AQI']:.2f}"
-        )
+            st.success(
+                f"Predicted AQI : {result['predicted_aqi']:.2f}"
+            )
+        else:
+            st.error(response.text)
 
-elif page == "🚦 AQI Bucket Prediction":
-
-    st.header("Predict AQI Bucket")
-
-    state = st.number_input("State Encoding", 0)
-
-    city = st.number_input("City Encoding", 0)
-
-    pollutant = st.number_input("Pollutant Encoding", 0)
-
-    pollutant_min = st.number_input("Pollutant Min")
-
-    pollutant_max = st.number_input("Pollutant Max")
-
-    pollutant_avg = st.number_input("Pollutant Average")
-
-    temperature = st.number_input("Temperature")
-
-    humidity = st.number_input("Humidity")
-
-    wind = st.number_input("Wind Speed")
+with col2:
 
     if st.button("Predict AQI Bucket"):
 
-        payload = {
-
-            "state": state,
-
-            "city": city,
-
-            "pollutant_id": pollutant,
-
-            "pollutant_min": pollutant_min,
-
-            "pollutant_max": pollutant_max,
-
-            "pollutant_avg": pollutant_avg,
-
-            "Temperature_C": temperature,
-
-            "Humidity_": humidity,
-
-            "Wind_Speed_kmh": wind
-        }
-
         response = requests.post(
-            API_URL + "/predict-bucket",
+            f"{API_URL}/predict-bucket",
             json=payload
         )
 
-        prediction = response.json()
+        if response.status_code == 200:
+            result = response.json()
 
-        st.success(
-            f"Predicted AQI Bucket : {prediction['Predicted_AQI_Bucket']}"
-        )
-elif page == "ℹ️ About":
-
-    st.header("About")
-
-    st.write("""
-    ## Air Quality Analysis & Prediction
-
-    This project analyzes air quality data and
-    predicts:
-
-    - AQI
-    - AQI Bucket
-
-    ### Algorithms
-
-    - Linear Regression
-    - Decision Tree
-    - Random Forest
-    - Logistic Regression
-
-    ### Developed By
-
-    Ravi Teja
-    """)
+            st.success(
+                f"Predicted Bucket : {result['predicted_bucket']}"
+            )
+        else:
+            st.error(response.text)
