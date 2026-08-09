@@ -14,7 +14,7 @@ st.markdown("Predict **AQI** and **AQI Bucket** using the trained Machine Learni
 # -----------------------------
 # FastAPI URL
 # -----------------------------
-API_URL = "http://127.0.0.1:8000"
+AAPI_URL = st.secrets["API_URL"]
 
 # -----------------------------
 # Load Dataset
@@ -127,7 +127,7 @@ with col1:
             response = requests.post(
                 f"{API_URL}/predict-aqi",
                 json=payload,
-                timeout=10
+                timeout=30
             )
 
             response.raise_for_status()
@@ -156,7 +156,7 @@ with col2:
             response = requests.post(
                 f"{API_URL}/predict-bucket",
                 json=payload,
-                timeout=10
+                timeout=30
             )
 
             response.raise_for_status()

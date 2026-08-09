@@ -3,10 +3,12 @@ __pycache__/
 .ipynb_checkpoints/
 
 .env
-
+models/
 .vscode/
 .idea/
 
 .DS_Store
 
 test/
+
+.streamlit/secrets.toml
