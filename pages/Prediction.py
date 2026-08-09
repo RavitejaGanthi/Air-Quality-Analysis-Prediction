@@ -14,7 +14,10 @@ st.markdown("Predict **AQI** and **AQI Bucket** using the trained Machine Learni
 # -----------------------------
 # FastAPI URL
 # -----------------------------
-AAPI_URL = st.secrets["API_URL"]
+API_URL = st.secrets.get(
+    "API_URL",
+    "http://127.0.0.1:8000"
+)
 
 # -----------------------------
 # Load Dataset
