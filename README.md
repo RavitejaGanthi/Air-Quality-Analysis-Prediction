@@ -74,7 +74,7 @@ Air-Quality-Analysis-Prediction/
 ### Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/Air-Quality-Analysis-Prediction.git
+git clone https://github.com/RavitejaGanthi/Air-Quality-Analysis-Prediction.git
 ```
 
 ```bash
