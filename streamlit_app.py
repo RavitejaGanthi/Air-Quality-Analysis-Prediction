@@ -5,6 +5,7 @@ st.set_page_config(
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="expanded"
+    
 )
 
 # ---------- Custom CSS ----------
@@ -19,7 +20,7 @@ st.markdown("""
 
 
 .sub-title{
-    font-size:24px;
+    font-size:50px;
     color:#666666;
     text-align:center;
 }
