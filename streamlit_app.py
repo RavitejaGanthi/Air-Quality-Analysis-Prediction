@@ -1,60 +1,122 @@
 import streamlit as st
+import pandas as pd
+
+
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 
 st.set_page_config(
     page_title="Air Quality Analysis & Prediction",
     page_icon="🌍",
     layout="wide",
     initial_sidebar_state="expanded"
-    
 )
 
-# ---------- Custom CSS ----------
-st.markdown("""
-<style>
-.main-title{
-    font-size:60px;
-    font-weight:700;
-    color:#2E86C1;
-    text-align:center;
-}
 
-
-.sub-title{
-    font-size:50px;
-    color:#666666;
-    text-align:center;
-}
-
-.card{
-    background-color:#f8f9fa;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:2px 2px 10px rgba(0,0,0,0.1);
-}
-
-.footer{
-    text-align:center;
-    color:gray;
-    margin-top:30px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ---------- Header ----------
+# ============================================================
+# CUSTOM CSS
+# ============================================================
 
 st.markdown(
-    '<p class="main-title">🌍 Air Quality Analysis & Prediction System</p>',
-    unsafe_allow_html=True,
+    """
+    <style>
+
+    /* Main page */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
+    }
+
+    /* Main Title */
+    .main-title {
+        font-size: 64px !important;
+        font-weight: 800 !important;
+        text-align: center !important;
+        color: #2E86C1 !important;
+        line-height: 1.15 !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    /* Subtitle */
+    .sub-title {
+        font-size: 24px !important;
+        text-align: center !important;
+        color: #555555 !important;
+        margin-bottom: 25px !important;
+    }
+
+    /* Cards */
+    .info-card {
+        background-color: #F4F8FC;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #E1E8EF;
+        min-height: 180px;
+    }
+
+    .info-card h3 {
+        color: #21618C;
+    }
+
+    /* Footer */
+    .footer {
+        text-align: center;
+        color: #777777;
+        padding-top: 25px;
+        padding-bottom: 10px;
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# ============================================================
+# LOAD DATA
+# ============================================================
+
+@st.cache_data
+def load_data():
+    return pd.read_csv("data/air_quality_clean.csv")
+
+
+try:
+    df = load_data()
+except Exception:
+    df = None
+
+
+# ============================================================
+# TITLE
+# ============================================================
+
+st.markdown(
+    """
+    <div class="main-title">
+        🌍 Air Quality Analysis & Prediction System
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 st.markdown(
-    '<p class="sub-title">Machine Learning • FastAPI • Streamlit</p>',
-    unsafe_allow_html=True,
+    """
+    <div class="sub-title">
+        Machine Learning • FastAPI • Streamlit
+    </div>
+    """,
+    unsafe_allow_html=True
 )
 
 st.divider()
 
-# ---------- Overview ----------
+
+# ============================================================
+# PROJECT OVERVIEW
+# ============================================================
 
 col1, col2 = st.columns([2, 1])
 
@@ -62,133 +124,313 @@ with col1:
 
     st.markdown("## 📌 Project Overview")
 
-    st.write("""
-This project analyzes air quality data collected across India and predicts:
+    st.write(
+        """
+        This project analyzes air quality data collected across India
+        and uses Machine Learning models to predict:
 
-- 🌫 Air Quality Index (AQI)
-- 🚦 AQI Category (AQI Bucket)
+        - 🌫️ **Air Quality Index (AQI)**
+        - 🚦 **AQI Category (AQI Bucket)**
 
-using Machine Learning models built with **Scikit-learn**, served through **FastAPI**, and presented using **Streamlit**.
-""")
+        The application uses **Scikit-learn** for Machine Learning,
+        **FastAPI** for REST APIs, and **Streamlit** for the interactive
+        web dashboard.
+        """
+    )
+
 
 with col2:
 
-    st.info("""
-### 📊 Dataset
+    st.markdown(
+        """
+        <div class="info-card">
 
-✔ Indian Air Quality Dataset
+        <h3>📊 Dataset</h3>
 
-✔ Weather Features
+        <p>✓ Indian Air Quality Dataset</p>
+        <p>✓ Weather Features</p>
+        <p>✓ Pollutant Information</p>
+        <p>✓ AQI Values</p>
+        <p>✓ AQI Categories</p>
 
-✔ Pollutant Information
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-✔ AQI Values
-
-✔ AQI Categories
-""")
 
 st.divider()
 
-# ---------- Features ----------
+
+# ============================================================
+# DATASET KPIs
+# ============================================================
+
+st.subheader("📊 Dataset Overview")
+
+if df is not None:
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.metric(
+            "Total Records",
+            f"{len(df):,}"
+        )
+
+    with col2:
+        st.metric(
+            "States",
+            df["state"].nunique()
+        )
+
+    with col3:
+        st.metric(
+            "Cities",
+            df["city"].nunique()
+        )
+
+    with col4:
+        st.metric(
+            "Pollutants",
+            df["pollutant_id"].nunique()
+        )
+
+else:
+
+    st.warning(
+        "Dataset could not be loaded. "
+        "Make sure data/air_quality_clean.csv exists."
+    )
+
+
+st.divider()
+
+
+# ============================================================
+# KEY FEATURES
+# ============================================================
 
 st.subheader("✨ Key Features")
 
-c1, c2, c3 = st.columns(3)
+col1, col2, col3 = st.columns(3)
 
-with c1:
-    st.success("""
-### 📊 Analysis
 
-- Dataset Preview
+with col1:
 
-- Missing Values
+    st.markdown(
+        """
+        <div class="info-card">
 
-- Summary Statistics
+        <h3>📊 Data Analysis</h3>
 
-- Data Quality
-""")
+        <p>• Dataset Preview</p>
+        <p>• Missing Values</p>
+        <p>• Summary Statistics</p>
+        <p>• Data Quality Analysis</p>
 
-with c2:
-    st.success("""
-### 📈 Visualization
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-- AQI Distribution
 
-- State-wise AQI
+with col2:
 
-- Top Polluted Cities
+    st.markdown(
+        """
+        <div class="info-card">
 
-- Correlation Heatmap
-""")
+        <h3>📈 Visualization</h3>
 
-with c3:
-    st.success("""
-### 🤖 Prediction
+        <p>• AQI Distribution</p>
+        <p>• State-wise AQI</p>
+        <p>• Top Polluted Cities</p>
+        <p>• Correlation Heatmap</p>
 
-- AQI Prediction
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-- AQI Bucket Prediction
 
-- FastAPI Integration
-""")
+with col3:
+
+    st.markdown(
+        """
+        <div class="info-card">
+
+        <h3>🤖 Prediction</h3>
+
+        <p>• AQI Prediction</p>
+        <p>• AQI Bucket Prediction</p>
+        <p>• FastAPI Integration</p>
+        <p>• Real-time Predictions</p>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
 st.divider()
 
-# ---------- Technology ----------
 
-st.subheader("🛠 Technology Stack")
+# ============================================================
+# TECHNOLOGY STACK
+# ============================================================
 
-t1, t2, t3, t4 = st.columns(4)
+st.subheader("🛠️ Technology Stack")
 
-t1.metric("Language", "Python")
-t2.metric("ML", "Scikit-Learn")
-t3.metric("Backend", "FastAPI")
-t4.metric("Frontend", "Streamlit")
+col1, col2, col3, col4, col5 = st.columns(5)
+
+with col1:
+    st.metric("Language", "Python")
+
+with col2:
+    st.metric("Data", "Pandas")
+
+with col3:
+    st.metric("ML", "Scikit-learn")
+
+with col4:
+    st.metric("Backend", "FastAPI")
+
+with col5:
+    st.metric("Frontend", "Streamlit")
+
 
 st.divider()
 
-# ---------- Workflow ----------
 
-st.subheader("⚙ Project Workflow")
+# ============================================================
+# PROJECT WORKFLOW
+# ============================================================
 
-st.code("""
+st.subheader("⚙️ Project Workflow")
+
+st.code(
+    """
 Dataset
-    │
-    ▼
+   │
+   ▼
 Data Cleaning
-    │
-    ▼
-EDA
-    │
-    ▼
+   │
+   ▼
+Exploratory Data Analysis
+   │
+   ▼
 Feature Engineering
-    │
-    ▼
+   │
+   ▼
 Machine Learning
-    │
-    ▼
-FastAPI API
-    │
-    ▼
+   │
+   ▼
+Model Evaluation
+   │
+   ▼
+FastAPI REST API
+   │
+   ▼
 Streamlit Dashboard
-""")
-
-st.divider()
-
-st.success("👈 Use the sidebar to navigate through the application.")
-
-st.markdown(
-    '<p class="footer">Developed by Raviteja Ganthi</p>',
-    unsafe_allow_html=True,
+   │
+   ▼
+AQI Prediction
+    """,
+    language="text"
 )
 
-import pandas as pd
 
-df = pd.read_csv("data/air_quality_clean.csv")
+st.divider()
 
-c1, c2, c3, c4 = st.columns(4)
 
-c1.metric("Records", len(df))
-c2.metric("States", df["state"].nunique())
-c3.metric("Cities", df["city"].nunique())
-c4.metric("Pollutants", df["pollutant_id"].nunique())
+# ============================================================
+# MACHINE LEARNING
+# ============================================================
+
+st.subheader("🤖 Machine Learning Models")
+
+col1, col2 = st.columns(2)
+
+
+with col1:
+
+    st.markdown(
+        """
+        ### Regression
+
+        Used to predict the numerical **AQI value**.
+
+        - Linear Regression
+        - Decision Tree Regressor
+        - Random Forest Regressor
+
+        **Evaluation:**
+        MAE, RMSE, R² Score
+        """
+    )
+
+
+with col2:
+
+    st.markdown(
+        """
+        ### Classification
+
+        Used to predict the **AQI Bucket**.
+
+        - Logistic Regression
+        - Decision Tree Classifier
+        - Random Forest Classifier
+
+        **Evaluation:**
+        Accuracy, Precision, Recall, F1 Score
+        """
+    )
+
+
+st.divider()
+
+
+# ============================================================
+# HOW TO USE
+# ============================================================
+
+st.subheader("🚀 How to Use")
+
+st.info(
+    """
+    Use the **sidebar** to navigate through the application.
+
+    **📊 Data Analysis** → Explore the dataset
+
+    **📈 Visualizations** → Analyze pollution trends
+
+    **🤖 Prediction** → Predict AQI and AQI category
+
+    **ℹ️ About** → Learn more about the project
+    """
+)
+
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+st.markdown(
+    """
+    <div class="footer">
+        <hr>
+        <p>
+            Air Quality Analysis & Prediction System
+        </p>
+        <p>
+            Built with Python • Scikit-learn • FastAPI • Streamlit
+        </p>
+        <p>
+            Developed by <b>Raviteja Ganthi</b>
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
